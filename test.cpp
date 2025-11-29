@@ -60,45 +60,103 @@ struct player
         shiftMultiplier = 1.0;
     }
 
-    void move(playerState newState) {
-        if(state != IDLE) return;
+    void move(playerState newState)
+    {
+        if (state != IDLE)
+            return;
         state = newState;
         progress = 0.0;
-        
-        if(state == MOVING_LEFT && currLane > 0) {
+
+        if (state == MOVING_LEFT && currLane > 0)
+        {
             targetLane = currLane - 1;
         }
-        else if(state == MOVING_RIGHT && currLane < 2) {
+        else if (state == MOVING_RIGHT && currLane < 2)
+        {
             targetLane = currLane + 1;
         }
     }
 
-    int getLaneX(int lane) {
-        if(lane == 0) return 122;
-        if(lane == 1) return 370;
-        if(lane == 2) return 622;
+    int getLaneX(int lane)
+    {
+        if (lane == 0)
+            return 122;
+        if (lane == 1)
+            return 370;
+        if (lane == 2)
+            return 622;
         return 370;
     }
 
-    void changePos() {
+    void changePos()
+    {
         int currX = getLaneX(currLane);
         int targetX = getLaneX(targetLane);
         r.x = currX + (targetX - currX) * progress - 25;
     }
 
-
     void update()
     {
-        if(state == IDLE) return;
+        if (state == IDLE)
+            return;
 
         progress += .1 * shiftMultiplier;
 
-        if(progress >= 1.0) {
+        if (progress >= 1.0)
+        {
             currLane = targetLane;
             state = IDLE;
             progress = 0.0;
         }
         changePos();
+    }
+};
+
+struct obstacle
+{
+public:
+    rectangle r;
+    int lane;
+    int speed;
+    bool onScreen;
+
+    obstacle(int lane, int speed = 3)
+    {
+        this->lane = lane;
+        this->speed = speed;
+        this->onScreen = true;
+        
+        
+        int xPos = getLaneX(lane) - 20;
+        r = rectangle(xPos, -60, 40, 60, color(255, 0, 0));
+    }
+
+    void draw(SDL_Plotter &g)
+    {
+        if (onScreen)
+        {
+            r.draw(g);
+        }
+    }
+
+    void update()
+    {
+        if (!onScreen)
+            return;
+
+        r.y += speed;
+
+        if (r.y > WINDOW_HEIGHT)
+        {
+            onScreen = false;
+        }
+    }
+    
+    int getLaneX(int lane) {
+        if(lane == 0) return 122;   // Left lane
+        if(lane == 1) return 370;   // Center lane
+        if(lane == 2) return 622;   // Right lane
+        return 370;                 // Default to center
     }
 };
 
@@ -109,6 +167,7 @@ int main(int argc, char **argv)
     char key;
 
     vector<rectangle> rectangles;
+    vector<obstacle> obstacles;
     rectangle lane1(245, 0, 1000, 5, color(0, 0, 255));
     rectangle lane2(495, 0, 1000, 5, color(0, 0, 255));
     rectangle rect(350, 900, 50, 50, color(72, 168, 50));
@@ -133,15 +192,43 @@ int main(int argc, char **argv)
             {
                 p.move(MOVING_RIGHT);
             }
+
+           
+            if (key == '1')
+            {
+                // Spawn obstacle in left lane
+                obstacles.push_back(obstacle(0, 3));
+            }
+            if (key == '2')
+            {
+                // Spawn obstacle in center lane
+                obstacles.push_back(obstacle(1, 3));
+            }
+            if (key == '3')
+            {
+                // Spawn obstacle in right lane
+                obstacles.push_back(obstacle(2, 3));
+            }
         }
 
         // UPDATE
         p.update();
+        
+        // Update all obstacles
+        for (auto& obs : obstacles) {
+            obs.update();
+        }
+        
         // RENDERING
         g.clear();
 
         lane1.draw(g);
         lane2.draw(g);
+        
+        for (auto& obs : obstacles) {
+            obs.draw(g);
+        }
+        
         p.r.draw(g);
 
         g.update();
@@ -150,6 +237,6 @@ int main(int argc, char **argv)
         g.Sleep(16);
     }
 
-    cout << "test2.cpp completed!" << endl;
+    cout << "test.cpp completed!" << endl;
     return 0;
 }
