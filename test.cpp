@@ -162,7 +162,9 @@ public:
 
 int main(int argc, char **argv)
 {
+    cout << "Starting program..." << endl;
     SDL_Plotter g(WINDOW_HEIGHT, WINDOW_WIDTH, true);
+    cout << "SDL_Plotter initialized successfully!" << endl;
     bool running = true;
     char key;
 
@@ -172,6 +174,17 @@ int main(int argc, char **argv)
     rectangle lane2(495, 0, 1000, 5, color(0, 0, 255));
     rectangle rect(350, 900, 50, 50, color(72, 168, 50));
     player p(rect);
+    
+    // PNG SPRITE TEST
+    PNGSprite testSprite;
+    
+    // Load your PNG file (change the path below to your desired PNG)
+    if (!testSprite.loadPNG("iBePoppinBottles.png")) {
+        cout << "Error: PNG file not found! Make sure the file exists." << endl;
+        return -1; // Exit if PNG fails to load
+    } else {
+        cout << "Successfully loaded PNG file!" << endl;
+    }
 
     while (!g.getQuit() && running)
     {
@@ -225,6 +238,9 @@ int main(int argc, char **argv)
         lane1.draw(g);
         lane2.draw(g);
         
+
+        testSprite.render(g, 370, 500);
+        
         for (auto& obs : obstacles) {
             obs.draw(g);
         }
@@ -232,7 +248,6 @@ int main(int argc, char **argv)
         p.r.draw(g);
 
         g.update();
-
         // TIMING
         g.Sleep(16);
     }

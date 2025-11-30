@@ -1,4 +1,21 @@
-.vscode/
+# Compiled executables
 *.exe
+
+# Dynamic libraries (platform specific)
+*.dll
+
+# VS Code settings (keep tasks.json but ignore other settings)
+.vscode/settings.json
+.vscode/launch.json
+.vscode/c_cpp_properties.json
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
 main.cpp
 test3.cpp

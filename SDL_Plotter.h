@@ -28,6 +28,7 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include <SDL_thread.h>
+#include <SDL_image.h>
 
 #include <string.h>
 #include <iostream>
@@ -35,6 +36,7 @@
 #include <string.h>
 #include <map>
 #include <queue>
+#include <vector>
 using namespace std;
 
 const char UP_ARROW    = 1;
@@ -157,6 +159,80 @@ public:
 
     Uint32 getColor(int x, int y);
 
+};
+
+// PNG Sprite Loading Class (requires SDL2_image)
+class PNGSprite {
+private:
+    int width, height;
+    std::vector<std::vector<color>> pixels;  // Store as SDL_Plotter colors
+    
+public:
+    PNGSprite() : width(0), height(0) {}
+    
+    bool loadPNG(const std::string& filename) {
+        SDL_Surface* surface = IMG_Load(filename.c_str());
+        if (!surface) {
+            std::cout << "Failed to load PNG: " << IMG_GetError() << std::endl;
+            return false;
+        }
+        
+        width = surface->w;
+        height = surface->h;
+        pixels.resize(height, std::vector<color>(width));
+        
+        // Lock surface for pixel access
+        if (SDL_MUSTLOCK(surface)) {
+            SDL_LockSurface(surface);
+        }
+        
+        // Convert SDL surface to SDL_Plotter colors
+        Uint32* pixelData = (Uint32*)surface->pixels;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                Uint32 pixel = pixelData[y * (surface->pitch / 4) + x];
+                Uint8 r, g, b, a;
+                SDL_GetRGBA(pixel, surface->format, &r, &g, &b, &a);
+                
+                // Store pixel (transparent pixels as black for now)
+                if (a > 128) {
+                    pixels[y][x] = color(r, g, b);
+                } else {
+                    pixels[y][x] = color(0, 0, 0);
+                }
+            }
+        }
+        
+        if (SDL_MUSTLOCK(surface)) {
+            SDL_UnlockSurface(surface);
+        }
+        
+        SDL_FreeSurface(surface);
+        return true;
+    }
+    
+    void render(SDL_Plotter& g, int x, int y, bool skipTransparent = true) {
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+                int drawX = x + col;
+                int drawY = y + row;
+                
+                if (drawX >= 0 && drawX < g.getCol() && drawY >= 0 && drawY < g.getRow()) {
+                    color& pixel = pixels[row][col];
+                    
+                    // Skip black pixels if treating as transparent
+                    if (skipTransparent && pixel.R == 0 && pixel.G == 0 && pixel.B == 0) {
+                        continue;
+                    }
+                    
+                    g.plotPixel(drawX, drawY, pixel);
+                }
+            }
+        }
+    }
+    
+    int getWidth() const { return width; }
+    int getHeight() const { return height; }
 };
 
 #endif // SDL_PLOTTER_H_
