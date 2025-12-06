@@ -165,21 +165,21 @@ public:
 class PNGSprite {
 private:
     int width, height;
-    std::vector<std::vector<color>> pixels;  // Store as SDL_Plotter colors
+    vector<vector<color>> pixels;  // Store as SDL_Plotter colors
     
 public:
     PNGSprite() : width(0), height(0) {}
     
-    bool loadPNG(const std::string& filename) {
+    bool loadPNG(const string& filename) {
         SDL_Surface* surface = IMG_Load(filename.c_str());
         if (!surface) {
-            std::cout << "Failed to load PNG: " << IMG_GetError() << std::endl;
+            cout << "Failed to load PNG: " << IMG_GetError() << endl;
             return false;
         }
         
         width = surface->w;
         height = surface->h;
-        pixels.resize(height, std::vector<color>(width));
+        pixels.resize(height, vector<color>(width));
         
         // Lock surface for pixel access
         if (SDL_MUSTLOCK(surface)) {
