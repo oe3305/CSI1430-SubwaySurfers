@@ -47,7 +47,7 @@ private:
 
 public:
 	static const int WIDTH = 600;
-	static const int HEIGHT = 1000;
+	static const int HEIGHT = 800;
 	static const int GROUND_LEVEL = HEIGHT*95/100;
 	static constexpr int LANES_X[3] = {WIDTH/6,WIDTH/2,WIDTH*5/6};
 	static constexpr double DELTA_TIME = 1.0/FPS;
