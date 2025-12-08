@@ -4,6 +4,8 @@
 #include "window_manager.h"
 #include "SDL_Plotter.h"
 
+const double deaccel =70;
+const double targetXVel = 1300;
 class Player
 {
 private:
@@ -11,8 +13,8 @@ private:
 	int lane;
 	int width, height;
 	double targetX;
-	Rectangle* r;
-	const double xVel = 800;
+	//Rectangle* r;
+	double xVel;
 	PNGSprite playerSprite;
 
 public:
@@ -26,9 +28,9 @@ public:
 		this -> width = width;
 		this -> height = height;
 
-		r = new Rectangle(static_cast<int>(x),y, height, width, color(0,255,0));
+		//r = new Rectangle(static_cast<int>(x),y, height, width, color(0,255,0));
 
-		if(!playerSprite.loadPNG("iBePoppinBottles.png")) {
+		if(!playerSprite.loadPNG("sprites/penguin.png",2)) {
 			cout << "Error: could not load that jawn";
 		}
     }
@@ -39,7 +41,7 @@ public:
 		targetX = Window::getLaneX(lane);
 		y = Window::GROUND_LEVEL;
 
-		r->setX(static_cast<int>(x));
+		//r->setX(static_cast<int>(x));
 	}
 
     void move(action act)
@@ -48,6 +50,7 @@ public:
 			if(act == MOVE_LEFT && lane > 0) lane--;
 			else if(act == MOVE_RIGHT && lane < 2) lane++;
 			targetX = Window::getLaneX(lane);
+			xVel = targetXVel;
 		}
 		//cout << "A: Player @ " << x << " moving to " << targetX << " in lane " << lane << endl;
     }
@@ -58,7 +61,8 @@ public:
 			if(x<targetX) x+=xVel*Window::DELTA_TIME;
 			else x-=xVel*Window::DELTA_TIME;
 			if(fabs(x-targetX) < xVel*Window::DELTA_TIME) x = targetX;
-			r->setX(static_cast<int>(x));
+			//r->setX(static_cast<int>(x));
+			if(xVel>deaccel) xVel-=deaccel;
 		}
     }
 

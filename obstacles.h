@@ -4,84 +4,54 @@
 #include "window_manager.h"
 #include "SDL_Plotter.h"
 
+enum type {
+	ICEBURG,
+	BIG_ICEBURG,
+	SNOWBALL
+};
 class Obstacle{
 private:
-	Rectangle* r;
+	//Rectangle* r;
 	double xVel;
-	double yVel;
 	double x,y;
 	int height;
 	int width;
 	PNGSprite obsSprite;
+	string imageName;
+	int type;
+	int scale;
+	int frame = 0;
+	double frameTimer = 0;
+	static double yVel;
+	const string iceburg[3] = {"iceburg1","iceburg2","snowman"};
+	const string snowball[4] = {"snowball0","snowball1","snowball2","snowball3"};
 
 public:
-	Obstacle(int lane, double yVel = 100, double xVel = 0,int height = 40,int width = 60)
-	{
-		this->yVel = yVel;
-		this->xVel = xVel;
-		this->height = height;
-		this->width = width;
-		
-		x = Window::getLaneX(lane);
-		y = -height/2;
-		r = new Rectangle(static_cast<int>(x),static_cast<int>(y), height, width, color(255, 0, 0));
-		
-		// Load the obstacle PNG sprite
-		if (!obsSprite.loadPNG("iBePoppinBottles.png")) {
-			cout << "Warning: Could not load obstacle.png" << endl;
-		}
+	Obstacle(int lane, int t, double xVel = 0,int height = 48,int width = 48);
+
+	static double& getYVel() {
+		return yVel;
 	}
 
-	void update()
-	{
-		y += yVel*Window::DELTA_TIME;
-		r->setY(static_cast<int>(y));
-		if(xVel!=0) {
-			x += xVel*Window::DELTA_TIME;
-			if(x-width/2<=0) xVel*=-1;
-			if(x+width/2>=Window::WIDTH) xVel*=-1;
-			r->setX(static_cast<int>(x));
-		}
-
-		if(done()) removeRect();
+	static void setYVel(double speed) {
+		yVel = speed;
 	}
 
-	bool done() {
-		return r->getY()-r->getHeight()/2 > Window::HEIGHT;
-	}
+	void update();
 
-	bool withinBounds(point p) {
-		if(p.y < y-width/2) return false;
-		if(p.y > y+width/2) return false;
-		if(p.x < x-width/2) return false;
-		if(p.x > x+width/2) return false;
-		return true;
-	}
+	bool done();
 
-	void removeRect() {
-		Window::removeRectangle(r);
-	}
+	bool withinBounds(point p);
 	
 	// Method to render the PNG sprite on top of the obstacle
-	void renderSprite(SDL_Plotter& g) {
-		// Calculate centered position for the sprite
-		int spriteX = static_cast<int>(x) - obsSprite.getWidth() / 2;
-		int spriteY = static_cast<int>(y) - obsSprite.getHeight() / 2;
-		
-		// Render the PNG sprite
-		obsSprite.render(g, spriteX, spriteY);
-	}
+	void renderSprite(SDL_Plotter& g);
 	
 	// Getter methods for position (useful for rendering)
-	int getX() const { return static_cast<int>(x); }
-	int getY() const { return static_cast<int>(y); }
+	int getX() const;
+	int getY() const;
 	
 	// Method to render both rectangle and sprite
-	void draw(SDL_Plotter& g) {
-		
-		// Draw the PNG sprite on top
-		renderSprite(g);
-	}
+	void draw(SDL_Plotter& g);
 };
 
 #endif /* obstacles_h */

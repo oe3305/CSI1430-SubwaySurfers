@@ -14,7 +14,8 @@ enum action {
 	MOVE_LEFT,
 	MOVE_RIGHT,
 	RESTART,
-	NONE
+	NONE,
+	START
 };
 
 class Rectangle {

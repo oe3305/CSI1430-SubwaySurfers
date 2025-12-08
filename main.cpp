@@ -7,6 +7,7 @@ vector<Obstacle*> obstacles;
 int score;
 double velocityMultiplier;
 double obstacleDelay;
+double speed = 100;
 
 void displayScore() {
 	cout << "\033c";
@@ -26,23 +27,27 @@ void addScore() {
 int lane = rand()%3;
 void addObstacle() {
 	int type = rand()%10;
+	//int type = 8;
 	lane = (lane+1+rand()%2)%3;
-	int yVel = 100*velocityMultiplier;
+	speed = 100*velocityMultiplier;
 	int xVel = 0;
+	char spriteID = '0'+rand()%2;
 	switch(type) {
 		case 7: //Tall
-			obstacles.push_back(new Obstacle(lane, yVel, 0, 80));
+			obstacles.push_back(new Obstacle(lane, BIG_ICEBURG, 0, 48, 96));
+			cout << "Big Iceburg" << endl;
 			break;
 		case 8: //Bouncing
 			xVel = rand()%50+100;
 			if(rand()%2==0) xVel*=-1;
-			obstacles.push_back(new Obstacle(lane, yVel, xVel, 20, 20));
+			obstacles.push_back(new Obstacle(lane, SNOWBALL, xVel, 20, 20));
 			break;
 		case 9: // Double
-			obstacles.push_back(new Obstacle((lane+1)%3, yVel));
+			obstacles.push_back(new Obstacle((lane+1)%3,ICEBURG));
 		default:// Default Obstacle
-			obstacles.push_back(new Obstacle(lane, yVel));
+			obstacles.push_back(new Obstacle(lane, ICEBURG));
 	}
+	Obstacle::setYVel(speed);
 	//cout << "New Obstacle: " << obstacles.size() << endl;
 }
 
@@ -71,12 +76,30 @@ int WinMain(int argc, char **argv)
     //cout << "Starting program." << endl;
 	SDL_Plotter g(Window::HEIGHT,Window::WIDTH,true);
     Window w(g);
+	PNGSprite background;
+	double bgOffset = 0;
+	if (!background.loadPNG("sprites/background.png",2)) {
+		cout << "Warning: Could not load sprites/background.png" << endl;
+	}
 	Player p(30,30);
 	w.Render();
 	bool alive;
 	double obstacleTimer;
 	action a;
 
+	PNGSprite titleScreen;
+	if (!titleScreen.loadPNG("sprites/titleScreen.png",4)) {
+		cout << "Warning: Could not load sprites/titleScreen.png" << endl;
+	}
+
+	do {
+		w.Render();
+		
+		background.render(w.getPlotter(), 0, 0);
+		titleScreen.render(w.getPlotter(), Window::WIDTH/6, Window::WIDTH/2+16*4);
+		a = w.GetAction();
+		w.NextFrame();
+	} while(a!=START && w.IsRunning());
 
 
 	while(w.IsRunning()) {
@@ -107,24 +130,23 @@ int WinMain(int argc, char **argv)
 				if(o->done()) removeObstacle(o);
 			}
 
+			//Move Background
+			bgOffset += speed*Window::DELTA_TIME;
+			if(bgOffset >= 0) bgOffset = -800;
+
 			//Rendering
 			w.Render();
 			
-			// Render PNG sprites on top of rectangles
-			// Render obstacles with PNG sprites
+			// Render PNG sprites
+			background.render(w.getPlotter(), 0, static_cast<int>(bgOffset));
 			for(Obstacle* o : obstacles) {
 				o->draw(w.getPlotter());  // This calls the draw() method which renders the PNG sprite
 			}
-			
-			// Render player with PNG sprite
 			p.draw(w.getPlotter());
 			
 			w.NextFrame();
 		}
 		if(w.IsRunning()) cout << "Press R to Restart" << endl;
-		for(Obstacle* o : obstacles) {
-			o->removeRect();
-		}
 		obstacles.clear();
 		w.Render();
 		do {

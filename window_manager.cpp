@@ -60,6 +60,7 @@ void Window::Render() {
 	for(auto* i : rectangles) {
 		(*i).draw(g);
 	}
+	
 
 	//cout << "Rendered" << endl;
 
@@ -77,6 +78,7 @@ action Window::GetAction() {
 		if (key == LEFT_ARROW) return MOVE_LEFT;
 		if (key == RIGHT_ARROW) return MOVE_RIGHT;
 		if (key == 'R') return RESTART;
+		if (key == ' ') return START;
 	}
 	return NONE;
 }

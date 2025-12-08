@@ -168,21 +168,21 @@ public:
 // PNG Sprite Loading Class (requires SDL2_image)
 class PNGSprite {
 private:
-    int width, height;
+    int width, height,scalar;
     std::vector<std::vector<color>> pixels;  // Store as SDL_Plotter colors
     
 public:
     PNGSprite() : width(0), height(0) {}
     
-    bool loadPNG(const std::string& filename) {
+    bool loadPNG(const std::string& filename,int scalar = 1) {
         SDL_Surface* surface = IMG_Load(filename.c_str());
         if (!surface) {
             std::cout << "Failed to load PNG: " << IMG_GetError() << std::endl;
             return false;
         }
         
-        width = surface->w;
-        height = surface->h;
+        width = (surface->w)*scalar;
+        height = (surface->h)*scalar;
         pixels.resize(height, std::vector<color>(width));
         
         // Lock surface for pixel access
@@ -194,16 +194,16 @@ public:
         Uint32* pixelData = (Uint32*)surface->pixels;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                Uint32 pixel = pixelData[y * (surface->pitch / 4) + x];
+                Uint32 pixel = pixelData[y/scalar * (surface->pitch / 4) + x/scalar];
                 Uint8 r, g, b, a;
                 SDL_GetRGBA(pixel, surface->format, &r, &g, &b, &a);
                 
                 // Store pixel (transparent pixels as black for now)
-                if (a > 128) {
-                    pixels[y][x] = color(r, g, b);
-                } else {
-                    pixels[y][x] = color(0, 0, 0);
-                }
+				if (a > 128) {
+					pixels[y][x] = color(r, g, b);
+				} else {
+					pixels[y][x] = color(0, 0, 0);
+				}
             }
         }
         
