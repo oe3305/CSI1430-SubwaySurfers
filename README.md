@@ -50,6 +50,8 @@ A 3-lane runner game built with SDL2 and C++.
 - **Left Arrow**: Move left lane
 - **Right Arrow**: Move right lane  
 - **Q**: Quit game
+- **R**: Restart
+- **Space**: Start game
 
 ## Project Structure
 - `SDL_Plotter.h/cpp` - Graphics library wrapper for SDL2
