@@ -2,6 +2,7 @@
 #define player_h
 
 #include "window_manager.h"
+#include "SDL_Plotter.h"
 
 class Player
 {
@@ -12,6 +13,7 @@ private:
 	double targetX;
 	Rectangle* r;
 	const double xVel = 800;
+	PNGSprite playerSprite;
 
 public:
     Player(int width, int height)
@@ -25,6 +27,10 @@ public:
 		this -> height = height;
 
 		r = new Rectangle(static_cast<int>(x),y, height, width, color(0,255,0));
+
+		if(!playerSprite.loadPNG("iBePoppinBottles.png")) {
+			cout << "Error: could not load that jawn";
+		}
     }
 
 	void reset() {
@@ -61,6 +67,26 @@ public:
 		corners[1] = point(x-width/2,y+width/2);
 		corners[2] = point(x+width/2,y-width/2);
 		corners[3] = point(x+width/2,y+width/2);
+	}
+
+	void renderSprite(SDL_Plotter& g) {
+		// Calculate centered position for the sprite
+		int spriteX = static_cast<int>(x) - playerSprite.getWidth() / 2;
+		int spriteY = static_cast<int>(y) - playerSprite.getHeight() / 2;
+		
+		// Render the PNG sprite
+		playerSprite.render(g, spriteX, spriteY);
+	}
+	
+	// Getter methods for position (useful for rendering)
+	int getX() const { return static_cast<int>(x); }
+	int getY() const { return static_cast<int>(y); }
+	
+	// Method to render both rectangle and sprite
+	void draw(SDL_Plotter& g) {
+		
+		// Draw the PNG sprite on top
+		renderSprite(g);
 	}
 };
 

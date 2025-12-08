@@ -77,6 +77,8 @@ int WinMain(int argc, char **argv)
 	double obstacleTimer;
 	action a;
 
+
+
 	while(w.IsRunning()) {
 		//Setup
 		score = 0;
@@ -107,6 +109,16 @@ int WinMain(int argc, char **argv)
 
 			//Rendering
 			w.Render();
+			
+			// Render PNG sprites on top of rectangles
+			// Render obstacles with PNG sprites
+			for(Obstacle* o : obstacles) {
+				o->draw(w.getPlotter());  // This calls the draw() method which renders the PNG sprite
+			}
+			
+			// Render player with PNG sprite
+			p.draw(w.getPlotter());
+			
 			w.NextFrame();
 		}
 		if(w.IsRunning()) cout << "Press R to Restart" << endl;

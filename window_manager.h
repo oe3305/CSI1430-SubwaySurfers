@@ -62,6 +62,7 @@ public:
 	static void addRectangle(Rectangle* r){rectangles.push_back(r);}
 	static void removeRectangle(Rectangle*);
 	static void reset();
+	SDL_Plotter& getPlotter() {return g;}
 };
 
 #endif /* window_manager_h */
