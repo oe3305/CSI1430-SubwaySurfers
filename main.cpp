@@ -35,7 +35,6 @@ void addObstacle() {
 	switch(type) {
 		case 7: //Tall
 			obstacles.push_back(new Obstacle(lane, BIG_ICEBURG, 0, 48, 96));
-			cout << "Big Iceburg" << endl;
 			break;
 		case 8: //Bouncing
 			xVel = rand()%50+100;
