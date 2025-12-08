@@ -25,10 +25,10 @@
 
 
 //Windows Library
-#include <SDL.h>
-#include <SDL_mixer.h>
-#include <SDL_thread.h>
-#include <SDL_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_thread.h>
+#include <SDL2/SDL_image.h>
 
 #include <string.h>
 #include <iostream>
@@ -158,6 +158,10 @@ public:
     void getMouseLocation(int& x, int& y);
 
     Uint32 getColor(int x, int y);
+
+	void hideWindow();
+	void showWindow();
+	void destroyWindow();
 
 };
 

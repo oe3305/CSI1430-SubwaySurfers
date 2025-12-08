@@ -1,0 +1,67 @@
+#ifndef player_h
+#define player_h
+
+#include "window_manager.h"
+
+class Player
+{
+private:
+	double x,y;
+	int lane;
+	int width, height;
+	double targetX;
+	Rectangle* r;
+	const double xVel = 800;
+
+public:
+    Player(int width, int height)
+    {
+		lane = 1;
+		x = Window::getLaneX(lane);
+		targetX = Window::getLaneX(lane);
+		y = Window::GROUND_LEVEL;
+
+		this -> width = width;
+		this -> height = height;
+
+		r = new Rectangle(static_cast<int>(x),y, height, width, color(0,255,0));
+    }
+
+	void reset() {
+		lane = 1;
+		x = Window::getLaneX(lane);
+		targetX = Window::getLaneX(lane);
+		y = Window::GROUND_LEVEL;
+
+		r->setX(static_cast<int>(x));
+	}
+
+    void move(action act)
+    {
+		if(targetX==x) {
+			if(act == MOVE_LEFT && lane > 0) lane--;
+			else if(act == MOVE_RIGHT && lane < 2) lane++;
+			targetX = Window::getLaneX(lane);
+		}
+		//cout << "A: Player @ " << x << " moving to " << targetX << " in lane " << lane << endl;
+    }
+
+    void update()
+    {
+		if(x != targetX) {
+			if(x<targetX) x+=xVel*Window::DELTA_TIME;
+			else x-=xVel*Window::DELTA_TIME;
+			if(fabs(x-targetX) < xVel*Window::DELTA_TIME) x = targetX;
+			r->setX(static_cast<int>(x));
+		}
+    }
+
+	void corners(point* corners) {
+		corners[0] = point(x-width/2,y-width/2);
+		corners[1] = point(x-width/2,y+width/2);
+		corners[2] = point(x+width/2,y-width/2);
+		corners[3] = point(x+width/2,y+width/2);
+	}
+};
+
+#endif /* player_h */

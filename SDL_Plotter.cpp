@@ -53,9 +53,9 @@ SDL_Plotter::SDL_Plotter(int r, int c, bool WITH_SOUND){
 
 	SDL_Init(SDL_INIT_AUDIO);
 
-    window   = SDL_CreateWindow("SDL2 Pixel Drawing",
+    window   = SDL_CreateWindow("Subway Surfers",
     		                     SDL_WINDOWPOS_UNDEFINED,
-    		                     SDL_WINDOWPOS_UNDEFINED, col, row, 0);
+    		                     SDL_WINDOWPOS_UNDEFINED, col, row, SDL_WINDOW_HIDDEN);
 
     renderer = SDL_CreateRenderer(window, -1, 0);
 
@@ -86,6 +86,7 @@ SDL_Plotter::~SDL_Plotter(){
 }
 
 void SDL_Plotter::update(){
+	//cout << "Updated" << endl;
     SDL_UpdateTexture(texture, NULL, pixels, col * sizeof(Uint32));
     SDL_RenderClear(renderer);
     SDL_RenderCopy(renderer, texture, NULL, NULL);
@@ -278,4 +279,16 @@ bool SDL_Plotter::getMouseMotion(int& x, int& y){
 void SDL_Plotter::getMouseLocation(int& x, int& y){
     SDL_GetMouseState( &x, &y );
     cout << x << " " << y << endl;
+}
+
+void SDL_Plotter::hideWindow() {
+	SDL_HideWindow(window);
+}
+
+void SDL_Plotter::showWindow() {
+	SDL_ShowWindow(window);
+}
+
+void SDL_Plotter::destroyWindow() {
+	SDL_DestroyWindow(window);
 }
