@@ -53,7 +53,7 @@ SDL_Plotter::SDL_Plotter(int r, int c, bool WITH_SOUND){
 
 	SDL_Init(SDL_INIT_AUDIO);
 
-    window   = SDL_CreateWindow("Subway Surfers",
+    window   = SDL_CreateWindow("Penquin Panic",
     		                     SDL_WINDOWPOS_UNDEFINED,
     		                     SDL_WINDOWPOS_UNDEFINED, col, row, SDL_WINDOW_HIDDEN);
 
